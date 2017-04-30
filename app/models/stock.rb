@@ -1,4 +1,6 @@
 class Stock < ActiveRecord::Base
+  has_many :user_stocks
+  has_many :users, through: :user_stocks 
   
   def self.find_by_ticker (ticker_symbol)
     where(ticker: ticker_symbol).first
@@ -11,6 +13,7 @@ class Stock < ActiveRecord::Base
     new_stock = new(ticker: looked_up_stock.symbol, name: looked_up_stock.name)
     new_stock.last_price = new_stock.price
     new_stock
+    
   end
   
   def price
@@ -18,7 +21,7 @@ class Stock < ActiveRecord::Base
     
     return "#{closing_price} (closing)" if closing_price
     opening_price = StockQuote::Stock.quote(ticker).open
-    return "#{opening_price} (opening)"if closing_price
+    return "#{opening_price} (opening)"if opening_price
     'Unavailable'
   end
   
